@@ -1,66 +1,26 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <iostream>
-#include "expr.tab.h"
 #include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <execinfo.h>
+#include "globals.h"
 
-void signal_handler(int signal) {
+int STMT_CNT = 0;
+int ERROR_CNT = 0;
+
+void signal_handler(int signal) // Can be used in debugging and detecting system errors like SegFault
+{
     void *array[10];
     size_t size;
-    
-    // Get the backtrace
+
     size = backtrace(array, 10);
-    
-    // Print the backtrace to stderr
+
     fprintf(stderr, "Error: signal %d:\n", signal);
     backtrace_symbols_fd(array, size, STDERR_FILENO);
-    
-    // Exit the program
+
     exit(1);
 }
 
-int yyerror(const char *s)
-{
-    fprintf(stderr, "%s\n", s);
-    return 0;
-}
-
-typedef struct _node
-{
-    char *name;
-    int value;
-    struct _node *next;
-} node;
-
-typedef enum
-{
-    OP_TYPE,
-    NUM_TYPE,
-    ID_TYPE
-} nodeType;
-
-typedef struct _exprNode
-{
-    nodeType type;
-    struct _exprNode *left;
-    struct _exprNode *right;
-    union
-    {
-        char op;
-        int numValue;
-        char *idName;
-    } data;
-} exprNode;
-
-typedef node *symbolTable;
 symbolTable symtbl;
 
-node* insert(char *name)
+node *insert(char *name)
 {
     node *newNode = (node *)malloc(sizeof(node));
     newNode->name = strdup(name);
@@ -85,8 +45,9 @@ node *lookup(char *name)
 
 void set(node *name, int value)
 {
-    if(name == NULL) {
-        yyerror("Variable not founde");
+    if (name == NULL)
+    {
+        yyerror("[ERROR] Identifier not found in symbol table");
         return;
     }
     name->value = value;
@@ -165,7 +126,7 @@ int evaluate(exprNode *root)
     if (root == NULL)
     {
         // raise error by calling yyerror
-        yyerror("[Error] Tree can not be empty");
+        yyerror("[ERROR] Tree cannot be empty");
         return 0;
     }
     if (root->type == NUM_TYPE)
@@ -189,18 +150,29 @@ int evaluate(exprNode *root)
         case '*':
             return left * right;
         case '/':
+        {
+            if (right == 0)
             {
-                if(right == 0) {
-                    yyerror("Division by zero");
-                    return 0;
-                    }
-                return left / right;}
+                yyerror("[MATH ERROR] Division by zero");
+                return 0;
+            }
+            return left / right;
+        }
         case '%':
+        {
+            if (right == 0)
+            {
+                yyerror("[MATH ERROR] Modulo by zero");
+                return 0;
+            }
             return left % right;
+        }
         case '^':
+        {
             return binpower(left, right);
+        }
         default:
-            yyerror("Unknown operator");
+            yyerror("[PARSING ERROR] Invalid operator");
             return 0;
         }
     }
@@ -220,6 +192,18 @@ void deleteTree(exprNode *root)
 int main()
 {
     symtbl = NULL;
-    yyparse();
+    if (yyparse() == 0)
+    {
+        std::cout << "\n[PARSING COMPLETED SUCCESFULLY]\n";
+        std::cout << "[INFO]: " << STMT_CNT << " statement(s) have been parsed\n";
+        std::cout << "[INFO]: " << ERROR_CNT << " error(s) have been encountered\n";
+    }
+    else
+    {
+        std::cout << "\n[PARSING FAILED] : Syntax Error ( Non-Sytactical errors can be retrieved and the parsing may be continued)\n";
+        std::cout << "Terminating the program\n";
+        std::cout << "[INFO]: " << STMT_CNT << " statement(s) have been parsed\n";
+        std::cout << "[INFO]: " << ERROR_CNT << " error(s) have been encountered\n";
+    }
     return 0;
 }

@@ -1,47 +1,7 @@
 %{
-    #include <stdio.h>
-    #include <stdlib.h>
-    #include <string.h>
-    #include<ctype.h>
-    
+    #include "globals.h"
+    int yyerrstatus = 0;
     int yylex();
-    int yyerror(const char *s);
-
-    typedef struct _node{
-        char *name;
-        int value;
-        struct _node *next;
-    }node;
-
-    typedef enum { OP_TYPE, NUM_TYPE, ID_TYPE } nodeType;
-
-    typedef struct _exprNode{
-        nodeType type;
-        struct _exprNode *left;
-        struct _exprNode *right;
-        union {
-        char op;
-        int numValue;
-        char *idName;
-    } data;
-    }exprNode;
-
-    typedef node* symbolTable;
-
-    node* insert(char *name);
-    node* lookup(char *name);
-    void set(node *name, int value);
-
-    
-
-    // simple function declarations
-    exprNode* createLeafNodeConst(int value);
-    exprNode* createLeafNodeID(symbolTable symtbl);
-    exprNode* createOpNode(char op, exprNode *left, exprNode *right);
-    void printExprTree(exprNode *root);
-    int evaluate(exprNode *root);
-    void deleteTree(exprNode *root);
-
 %}
 
 %union{
@@ -51,15 +11,6 @@
     struct _exprNode *expr;
     
 }
-/*
-PROGRAM ⟶ STMT PROGRAM | STMT
-STMT ⟶ SETSTMT | EXPRSTMT
-SETSTMT ⟶ ( set ID NUM ) | ( set ID ID ) | ( set ID EXPR )
-EXPRSTMT ⟶ EXPR
-EXPR ⟶ ( OP ARG ARG )
-OP ⟶ + | – | * | / | % | **
-ARG ⟶ ID | NUM | EXPR
-*/
 
 %token LP RP ADD SUB MUL DIV MOD POW SET
 %token <ival> NUM
@@ -75,8 +26,8 @@ PROGRAM: STMT PROGRAM
         | STMT
         ;
 
-STMT: SETSTMT 
-    | EXPRSTMT
+STMT: SETSTMT { STMT_CNT++;}
+    | EXPRSTMT {STMT_CNT++;}
     ;
 
 SETSTMT: LP SET ID NUM RP { 
@@ -99,7 +50,9 @@ SETSTMT: LP SET ID NUM RP {
                 printf("Variable %s set to %s (%d)\n", $3, $4,n2->value);
             }
             else{
-                fprintf(stderr, "Variable %s not found\n", $4);
+                printf("Variable %s not found\n", $4);
+                yyerrstatus = 1;
+                yyerror("[PARSE ERROR] Variable not found");
             }
         }
         | LP SET ID EXPR RP { 
@@ -110,8 +63,8 @@ SETSTMT: LP SET ID NUM RP {
             int value = evaluate($4);
             set(cur, value);
             printf("Variable %s set to %d\n", $3, value);
-            deleteTree($4);
-        } // use the expression tree to evaluate the expression, free the tree for this expression after wards
+            deleteTree($4);                                     // use the expression tree to evaluate the expression, free the tree for this expression after wards
+        } 
         ;
 
 EXPRSTMT: EXPR { 
@@ -143,4 +96,34 @@ ARG: ID { exprNode *root = createLeafNodeID(lookup($1)); $$ = root; }
     ;
 
 %%
+
+
+int yyerror(const char *s) {
+
+    ERROR_CNT++;
+
+    printf("Pausing parsing");
+    for (int i = 0; i < 3; ++i) {
+        printf(".");
+        fflush(stdout);
+        sleep(1);
+    }
+    printf("\n"); 
+
+    printf("Error in Statement # %d\n", STMT_CNT);
+    fprintf(stderr, "%s\n", s);
+    sleep(1);
+    yyerrstatus = 0;                // doesnt raise a make error as error has been handled
+
+    printf("Attempt to resume parsing");
+    for (int i = 0; i < 3; ++i) {
+        printf(".");
+        fflush(stdout);
+        sleep(1);
+    }
+    printf("\n");
+    STMT_CNT--;                    // decrement the statement count as the error statement is not executed
+
+    return 0;
+}
 

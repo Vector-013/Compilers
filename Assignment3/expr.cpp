@@ -200,10 +200,11 @@ int main()
     }
     else
     {
-        std::cout << "\n[PARSING FAILED] : Syntax Error ( Non-Sytactical errors can be retrieved and the parsing may be continued)\n";
+        std::cout << "\n[PARSING FAILED] : Syntax Error ( Non-Syntactical errors can be retrieved and the parsing may be continued)\n";
         std::cout << "Terminating the program\n";
         std::cout << "[INFO]: " << STMT_CNT << " statement(s) have been parsed\n";
         std::cout << "[INFO]: " << ERROR_CNT << " error(s) have been encountered\n";
     }
     return 0;
 }
+

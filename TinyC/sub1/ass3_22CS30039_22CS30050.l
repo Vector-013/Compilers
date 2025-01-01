@@ -8,7 +8,6 @@
 #define PUNCTUATOR 7
 #define SL_COMM 8
 #define ML_COMM 9
-
 %}
 /*comments*/
 comm_content [^*]|[*][^/]
@@ -18,7 +17,6 @@ comm_single "//"[^\n]*\n
 /* keywords */
 keyword "auto"|"break"|"case"|"char"|"const"|"continue"|"default"|"do"|"double"|"else"|"enum"|"extern"|"float"|"for"|"goto"|"if"|"inline"|"int"|"long"|"register"|"return"|"short"|"signed"|"sizeof"|"static"|"struct"|"switch"|"typedef"|"union"|"unsigned"|"void"|"volatile"|"_Bool"|"_Complex"|"_Imaginary"
 
-/* identifiers */nst"|"con
 alpha [a-zA-Z_]
 digit [0-9]
 identifier {alpha}({alpha}|{digit})*

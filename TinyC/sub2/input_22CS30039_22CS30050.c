@@ -1,26 +1,34 @@
-#include <stdio.h>
-#include <stdlib.h>
-
-typedef struct node
+/*
+ MULTI LINE COMMENT FOUND
+ Line 2 OF COMMENT
+ */
+float b = 2.5;
+float c = 3.5;
+void func()
 {
-    int data;
-    char c[10];
-    struct node *next;
-} node;
-
+    int a = 5;
+    a = a + 1;
+}
+extern int extern_int;
 static int static_int;
 volatile int volatile_int;
-inline int func();
-void func2();
-enum
+const int const_int = 5;
+restrict int restrict_int;
+inline float add(float a, float b)
 {
-    a = 1,
-    b = 2,
-    c = 3
-};
-
+    return a + b;
+}
 int main()
 {
+    long x, y = 1;
+    x = 5;
+
+    if (x > 0)
+        if (y > 0)
+            x = x / 1;
+        else
+            y = y % 1;
+
     // SINGLE LINE COMMENT FOUND
     int arr1[10];
     int arr2[10][10];
@@ -29,7 +37,6 @@ int main()
     char char1 = 'a';
     register reg1;
     short short1 = 0;
-    node *n1 = (node *)malloc(sizeof(node));
     for (int i = 0; i < 10; i++)
     {
         arr1[i] = i;
@@ -37,13 +44,13 @@ int main()
     }
     if (i1 == 1)
     {
-        i2 = 3;
+        i2 = 3 * 5;
     }
     else
     {
         i3 = 4;
     }
-    for (int i = 0; i < 10; i++)
+    for (auto i = 0; i < 10; i++)
     {
         if (i == 5)
         {
@@ -63,6 +70,7 @@ int main()
     Line 2 OF COMMENT
     */
 
+    float v = add(1.0, 2.0);
     do
     {
         i1++;
@@ -95,9 +103,6 @@ int main()
         i2 = 4;
         break;
     }
-    n1->data = 1;
-    n1->next = NULL;
-    free(n1);
 
     i3 *= 1;
     i3 /= 2;
@@ -122,7 +127,6 @@ int main()
     i2 = !i1;
     i2 = i1 == 1;
     char *c1 = "Dummy string mark-1";
-    int *ptr3 = (int *)malloc(sizeof(int));
     float f1 = 1.0;
     float _Complex c1 = 1.0;
     double d1 = 1.666;

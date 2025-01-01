@@ -1,0 +1,19 @@
+The following common cases have not been accounted for are - 
+
+1. if statement without a parameter in the function
+
+    int main(){
+        int x =1;
+        if(x){
+            // do something
+        }
+    }
+
+2. using a boolean as an integer
+
+    int main(){
+        int sum = 0;
+        sum = sum + (sum > 2);
+    }
+
+3. functions cant return correctlt in 3ac

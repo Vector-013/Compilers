@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -15,6 +16,7 @@
 
 extern int yylex();
 extern char *yytext;
+int include;
 
 class node
 {

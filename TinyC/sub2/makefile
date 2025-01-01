@@ -1,0 +1,8 @@
+start:
+	clear
+	rm -f tinyc2_22CS30039_22CS30050.tab.c tinyc2_22CS30039_22CS30050.tab.h lex.yy.c tinyc2_22CS30039_22CS30050 output_22CS30039_22CS30050.txt
+	bison -d tinyc2_22CS30039_22CS30050.y -Wcounterexamples
+	flex tinyc2_22CS30039_22CS30050.l
+	g++ -o tinyc2_22CS30039_22CS30050 tinyc2_22CS30039_22CS30050.tab.c lex.yy.c tinyc2_22CS30039_22CS30050.cpp -lm
+	./tinyc2_22CS30039_22CS30050 < input_22CS30039_22CS30050.c > output_22CS30039_22CS30050.txt
+	rm -f tinyc2_22CS30039_22CS30050.tab.c tinyc2_22CS30039_22CS30050.tab.h lex.yy.c tinyc2_22CS30039_22CS30050

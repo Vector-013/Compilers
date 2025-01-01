@@ -8,7 +8,6 @@
     int ival;
     char *sval;
     char cval;
-    struct _exprNode *expr;
     
 }
 
